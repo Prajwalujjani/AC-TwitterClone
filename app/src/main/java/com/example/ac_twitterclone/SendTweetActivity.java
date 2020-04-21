@@ -24,49 +24,70 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SendTweetActivity extends AppCompatActivity implements View.OnClickListener{
-    private EditText edtSendTweet;
 
-    public ListView viewTweets;
-    public Button btnViewTweets;
+    private EditText edtTweet;
+
+    private ListView viewTweetsListView;
+    private Button btnViewTweets;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_tweet);
 
-        edtSendTweet = findViewById(R.id.edtSendTweet);
-        btnViewTweets.findViewById(R.id.btnViewTweets);
-        viewTweets.findViewById(R.id.viewTweetsListView);
-        btnViewTweets.setOnClickListener( this);
+        edtTweet = findViewById(R.id.edtSendTweet);
+
+        viewTweetsListView = findViewById(R.id.viewTweetsListView);
+        btnViewTweets = findViewById(R.id.btnViewTweets);
+        btnViewTweets.setOnClickListener(this);
+
+
+        // HashMap<String, Integer> numbers = new HashMap<>();
+        // numbers.put("Number1", 1);
+        //  numbers.put("Number2", 2);
+
+
+
+        //  FancyToast.makeText(this,  numbers.get("Number1") + "", Toast.LENGTH_LONG, FancyToast.WARNING, true).show();
+
     }
-    public void sendTweet(View view){
+
+    public void sendTweet(View view) {
+
         ParseObject parseObject = new ParseObject("MyTweet");
-        parseObject.put("tweet", edtSendTweet.getText().toString());
+        parseObject.put("tweet", edtTweet.getText().toString());
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
-        final ProgressDialog progressDialog = new ProgressDialog(SendTweetActivity.this);
-        progressDialog.setMessage("Loading....");
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
         progressDialog.show();
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e == null){
 
-                    FancyToast.makeText(SendTweetActivity.this,ParseUser.getCurrentUser().getUsername()+"'s tweet" + "(" + edtSendTweet.getText().toString()+")"+ "is saved!!!", Toast.LENGTH_LONG,FancyToast.SUCCESS,true).show();
+                if (e == null) {
 
+                    FancyToast.makeText(SendTweetActivity.this, ParseUser.getCurrentUser().getUsername() + "'s tweet" + "(" + edtTweet.getText().toString() + ")" + " is saved!!!",
+                            Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+
+                } else {
+                    FancyToast.makeText(SendTweetActivity.this, e.getMessage(), Toast.LENGTH_SHORT,
+                            FancyToast.ERROR, true).show();
                 }
-                else {
-                    FancyToast.makeText(SendTweetActivity.this,e.getMessage(), Toast.LENGTH_SHORT,FancyToast.ERROR,true).show();
 
-                }
                 progressDialog.dismiss();
             }
-
         });
+
 
     }
 
     @Override
     public void onClick(View v) {
+
         final ArrayList<HashMap<String, String>> tweetList = new ArrayList<>();
         final SimpleAdapter adapter = new SimpleAdapter(SendTweetActivity.this, tweetList, android.R.layout.simple_list_item_2, new String[]{"tweetUserName", "tweetValue"}, new int[]{android.R.id.text1, android.R.id.text2});
         try {
@@ -84,7 +105,7 @@ public class SendTweetActivity extends AppCompatActivity implements View.OnClick
 
                         }
 
-                        viewTweets.setAdapter(adapter);
+                        viewTweetsListView.setAdapter(adapter);
 
                     }
                 }

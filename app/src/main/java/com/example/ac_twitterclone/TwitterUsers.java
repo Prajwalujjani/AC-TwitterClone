@@ -23,70 +23,81 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class TwitterUsers extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private ListView listView;
-    ArrayList<String > tusers;
-    ArrayAdapter arrayAdapter;
+    private ArrayList<String> tUsers;
+    private ArrayAdapter adapter;
+
     private String followedUser = "";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_twitter_users);
-        FancyToast.makeText(TwitterUsers.this,"Welcome " + ParseUser.getCurrentUser().getUsername(), Toast.LENGTH_SHORT,FancyToast.INFO,true).show();
+
+        FancyToast.makeText(this,"Welcome " + ParseUser.getCurrentUser().getUsername(), Toast.LENGTH_LONG, FancyToast.INFO, true).show();
 
         listView = findViewById(R.id.listView);
-        tusers = new ArrayList<>();
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_checked,tusers);
+        tUsers = new ArrayList<>();
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_checked, tUsers);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         listView.setOnItemClickListener(this);
 
 
-            try {
-                ParseQuery<ParseUser> query = ParseUser.getQuery();
-                query.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
-                query.findInBackground(new FindCallback<ParseUser>() {
-                    @Override
-                    public void done(List<ParseUser> objects, ParseException e) {
-                        if (objects.size() > 0 & e == null) {
+        try {
 
-                            for (ParseUser twitteruser : objects) {
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
 
-                                tusers.add(twitteruser.getUsername());
-                            }
-                            listView.setAdapter(arrayAdapter);
+                        for (ParseUser twitterUser : objects) {
+
+                            tUsers.add(twitterUser.getUsername());
+                        }
+                        listView.setAdapter(adapter);
+
+                        for (String twitterUser : tUsers) {
+
                             if (ParseUser.getCurrentUser().getList("fanOf") != null) {
-                                for (String twitteruser : tusers) {
-                                    if (ParseUser.getCurrentUser().getList("fanOf").contains(twitteruser)){
-                                        followedUser = followedUser + twitteruser + "\n";
+                                if (ParseUser.getCurrentUser().getList("fanOf").contains(twitterUser)) {
 
-                                        listView.setItemChecked(tusers.indexOf(twitteruser), true);
+                                    listView.setItemChecked(tUsers.indexOf(twitterUser), true);
 
-                                        FancyToast.makeText(TwitterUsers.this,ParseUser.getCurrentUser().getUsername()+ " is following \n" +followedUser,Toast.LENGTH_SHORT,FancyToast.INFO,true).show();
-                                    }
                                 }
-
                             }
                         }
+
                     }
-                });
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+                }
+            });
+        } catch (Exception e) {
+
+            e.getMessage();
+        }
+
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.my_menu, menu);
         return super.onCreateOptionsMenu(menu);
+
+
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        switch (item.getItemId()) {
 
             case R.id.logout_item:
                 ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
@@ -95,45 +106,54 @@ public class TwitterUsers extends AppCompatActivity implements AdapterView.OnIte
                         Intent intent = new Intent(TwitterUsers.this, MainActivity.class);
                         startActivity(intent);
                         finish();
-
                     }
                 });
-                break;
-            case R.id.sendTweetItem:
-                Intent intent = new Intent(TwitterUsers.this, SendTweetActivity.class);
-                startActivity(intent);
+
                 break;
 
+            case R.id.sendTweetItem:
+
+                Intent intent = new Intent(TwitterUsers.this, SendTweetActivity.class);
+                startActivity(intent);
+
+                break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-//    checked or unchecked
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CheckedTextView checkedTextView = (CheckedTextView) view;
-        if(checkedTextView.isChecked()){
-            FancyToast.makeText(TwitterUsers.this,tusers.get(position) + " is now followed",Toast.LENGTH_SHORT,FancyToast.INFO,true).show();
-            ParseUser.getCurrentUser().add("fanOf", tusers.get(position));
-        }else {
-            FancyToast.makeText(TwitterUsers.this,tusers.get(position) + " is now unfollowed",Toast.LENGTH_SHORT,FancyToast.INFO,true).show();
 
-            ParseUser.getCurrentUser().getList("fanOf").remove(tusers.get(position));
-            List currentUserFanOfList= ParseUser.getCurrentUser().getList("fanOf");
+    @Override
+    public void onItemClick(AdapterView<?> parent
+            , View view, int position, long id) {
+
+        CheckedTextView checkedTextView =  (CheckedTextView) view;
+
+        if (checkedTextView.isChecked()) {
+
+            FancyToast.makeText(TwitterUsers.this, tUsers.get(position) + " is now followed!", Toast.LENGTH_SHORT, FancyToast.INFO, true).show();
+            ParseUser.getCurrentUser().add("fanOf", tUsers.get(position));
+        } else {
+
+            FancyToast.makeText(TwitterUsers.this, tUsers.get(position) + " is now unfollowed!", Toast.LENGTH_SHORT, FancyToast.INFO, true).show();
+
+            ParseUser.getCurrentUser().getList("fanOf").remove(tUsers.get(position));
+            List currentUserFanOfList = ParseUser.getCurrentUser().getList("fanOf");
             ParseUser.getCurrentUser().remove("fanOf");
             ParseUser.getCurrentUser().put("fanOf", currentUserFanOfList);
+
         }
+
         ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e == null){
-                    FancyToast.makeText(TwitterUsers.this,"Saved",Toast.LENGTH_SHORT,FancyToast.SUCCESS,true).show();
+                if (e == null) {
+
+                    FancyToast.makeText(TwitterUsers.this, "Saved", Toast.LENGTH_SHORT,
+                            FancyToast.SUCCESS, true).show();
                 }
             }
         });
-
-
-
-
     }
+
 }
