@@ -36,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtUsersTweet"
+        android:id="@+id/btnViewTweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -51,6 +51,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnSend" />
 
     <ListView
+        android:id="@+id/viewTweets"
         android:layout_width="395dp"
         android:layout_height="497dp"
         app:layout_constraintBottom_toBottomOf="parent"
