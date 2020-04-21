@@ -35,8 +35,8 @@ public class SendTweetActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_send_tweet);
 
         edtSendTweet = findViewById(R.id.edtSendTweet);
-        btnViewTweets.findViewById(R.id.btnViewTweet);
-        viewTweets.findViewById(R.id.viewTweets);
+        btnViewTweets.findViewById(R.id.btnViewTweets);
+        viewTweets.findViewById(R.id.viewTweetsListView);
         btnViewTweets.setOnClickListener( this);
     }
     public void sendTweet(View view){
