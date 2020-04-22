@@ -144,6 +144,7 @@ public class TwitterUsers extends AppCompatActivity implements AdapterView.OnIte
 
         }
 
+        //Checked is saving to parseServer
         ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
